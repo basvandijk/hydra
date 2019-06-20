@@ -273,6 +273,10 @@ in
               runuser -u ${config.services.postgresql.superUser} -- ${config.services.postgresql.package}/bin/createdb -O hydra hydra
               touch ${baseDir}/.db-created
             fi
+            # The extension pg_trgm needs to be created by a superuser.
+            echo "alter user hydra with superuser" | runuser -u ${config.services.postgresql.superUser} -- ${config.services.postgresql.package}/bin/psql
+            echo "create extension pg_trgm" | ${config.services.postgresql.package}/bin/psql -U hydra
+            echo "alter user hydra with nosuperuser" | runuser -u ${config.services.postgresql.superUser} -- ${config.services.postgresql.package}/bin/psql
           ''}
 
           if [ ! -e ${cfg.gcRootsDir} ]; then
